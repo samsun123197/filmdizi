@@ -3,7 +3,7 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_URL = 'https://image.tmdb.org/t/p/w500';
 
 let currentPage = 1;
-let currentMode = 'trending'; // 'trending', 'search', 'genre'
+let currentMode = 'trending'; 
 let currentQuery = '';
 let currentGenreId = '';
 let favorites = JSON.parse(localStorage.getItem('myMoviesTMDB')) || [];
@@ -61,7 +61,7 @@ function renderMovies(movies, append) {
         card.classList.add('movie-card');
         
         const poster = poster_path ? IMG_URL + poster_path : "https://via.placeholder.com/300x450?text=Afiş+Yok";
-        const year = release_date ? release_date.split('-')[0] : 'N/A';
+        const year = release_date ? release_date.split('-')[0] : 'Bilinmiyor';
 
         card.innerHTML = `
             <button class="fav-icon ${isFav ? 'active' : ''}" data-id="${id}">❤</button>
@@ -72,16 +72,9 @@ function renderMovies(movies, append) {
             </div>
         `;
 
-        // Tıklayınca IMDB linkine gitmek için önce ID almamız gerekebilir 
-        // ancak TMDB ID'si ile playlinkleri de çalışabiliyor. 
-        // Eğer playimdb sitesi sadece tt... (IMDb ID) destekliyorsa 
-        // detay çekmek gerekir. Şimdilik genel yönlendirme:
-        card.onclick = (e) => {
-            if(e.target.classList.contains('fav-icon')) return;
-            // TMDB'de genellikle IMDb ID'si için ek bir istek gerekir. 
-            // Direkt TMDB ID'si ile çalışan bir play servisi deniyoruz:
-            window.open(`https://playimdb.com/title/${id}`, '_blank');
-        };
+        // Yönlendirme (window.open) kaldırıldı. 
+        // Kart artık sadece üzerine gelince büyüyen bir görsel öğe.
+        card.style.cursor = 'default'; 
 
         const favBtn = card.querySelector('.fav-icon');
         favBtn.onclick = (e) => {
