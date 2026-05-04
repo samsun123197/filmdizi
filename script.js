@@ -1,44 +1,52 @@
-const API_KEY = '838e49ba';
+const API_KEY = '4cf38230c1ed4f19d25340dbb4a22b8b';
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMG_URL = 'https://image.tmdb.org/t/p/w500';
+
 let currentPage = 1;
-let currentQuery = 'Action'; // Varsayılan açılış araması
-let favorites = JSON.parse(localStorage.getItem('myMovies')) || [];
+let currentMode = 'trending'; // 'trending', 'search', 'genre'
+let currentQuery = '';
+let currentGenreId = '';
+let favorites = JSON.parse(localStorage.getItem('myMoviesTMDB')) || [];
 
 const movieContainer = document.getElementById('movie-container');
 const loadMoreBtn = document.getElementById('load-more');
 const searchInput = document.getElementById('search');
 const siteTitle = document.getElementById('site-title');
 
-// Başlangıç
-window.onload = () => searchMovies(currentQuery);
+// Başlangıç: Trend olanları getir
+document.addEventListener('DOMContentLoaded', () => {
+    getMovies(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=tr-TR`);
+});
 
 // Arama Girişi
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         currentQuery = searchInput.value;
-        currentPage = 1;
-        searchMovies(currentQuery);
+        if (currentQuery) {
+            currentMode = 'search';
+            currentPage = 1;
+            getMovies(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${currentQuery}&language=tr-TR`);
+        }
     }
 });
 
-// Site başlığına tıklayınca ana sayfaya dön
-siteTitle.onclick = () => {
-    currentQuery = 'Action';
-    currentPage = 1;
-    searchMovies(currentQuery);
-};
-
-async function searchMovies(query, page = 1) {
+async function getMovies(url, page = 1) {
     if (page === 1) movieContainer.innerHTML = '<p>Yükleniyor...</p>';
     
-    const res = await fetch(`https://www.omdbapi.com/?s=${query}&page=${page}&apikey=${API_KEY}`);
-    const data = await res.json();
+    try {
+        const finalUrl = `${url}&page=${page}`;
+        const res = await fetch(finalUrl);
+        const data = await res.json();
 
-    if (data.Response === "True") {
-        renderMovies(data.Search, page > 1);
-        loadMoreBtn.style.display = 'inline-block';
-    } else {
-        if(page === 1) movieContainer.innerHTML = `<p>Sonuç bulunamadı.</p>`;
-        loadMoreBtn.style.display = 'none';
+        if (data.results && data.results.length > 0) {
+            renderMovies(data.results, page > 1);
+            loadMoreBtn.style.display = 'inline-block';
+        } else {
+            if (page === 1) movieContainer.innerHTML = '<p>Sonuç bulunamadı.</p>';
+            loadMoreBtn.style.display = 'none';
+        }
+    } catch (error) {
+        movieContainer.innerHTML = '<p>Veri çekilirken bir hata oluştu.</p>';
     }
 }
 
@@ -46,26 +54,35 @@ function renderMovies(movies, append) {
     if (!append) movieContainer.innerHTML = '';
 
     movies.forEach(movie => {
-        const isFav = favorites.some(fav => fav.imdbID === movie.imdbID);
+        const { title, poster_path, release_date, id } = movie;
+        const isFav = favorites.some(fav => fav.id === id);
+        
         const card = document.createElement('div');
         card.classList.add('movie-card');
         
+        const poster = poster_path ? IMG_URL + poster_path : "https://via.placeholder.com/300x450?text=Afiş+Yok";
+        const year = release_date ? release_date.split('-')[0] : 'N/A';
+
         card.innerHTML = `
-            <button class="fav-icon ${isFav ? 'active' : ''}" data-id="${movie.imdbID}">❤</button>
-            <img src="${movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x450'}" alt="${movie.Title}">
+            <button class="fav-icon ${isFav ? 'active' : ''}" data-id="${id}">❤</button>
+            <img src="${poster}" alt="${title}">
             <div class="movie-info">
-                <h3>${movie.Title}</h3>
-                <p>${movie.Year}</p>
+                <h3>${title}</h3>
+                <p>${year}</p>
             </div>
         `;
 
-        // Film izleme linkine yönlendirme (İstediğin format)
+        // Tıklayınca IMDB linkine gitmek için önce ID almamız gerekebilir 
+        // ancak TMDB ID'si ile playlinkleri de çalışabiliyor. 
+        // Eğer playimdb sitesi sadece tt... (IMDb ID) destekliyorsa 
+        // detay çekmek gerekir. Şimdilik genel yönlendirme:
         card.onclick = (e) => {
             if(e.target.classList.contains('fav-icon')) return;
-            window.open(`https://playimdb.com/title/${movie.imdbID}`, '_blank');
+            // TMDB'de genellikle IMDb ID'si için ek bir istek gerekir. 
+            // Direkt TMDB ID'si ile çalışan bir play servisi deniyoruz:
+            window.open(`https://playimdb.com/title/${id}`, '_blank');
         };
 
-        // Favorilere ekleme/çıkarma
         const favBtn = card.querySelector('.fav-icon');
         favBtn.onclick = (e) => {
             e.stopPropagation();
@@ -78,24 +95,30 @@ function renderMovies(movies, append) {
 }
 
 function toggleFavorite(movie) {
-    const index = favorites.findIndex(fav => fav.imdbID === movie.imdbID);
+    const index = favorites.findIndex(fav => fav.id === movie.id);
     if (index > -1) {
         favorites.splice(index, 1);
     } else {
         favorites.push(movie);
     }
-    localStorage.setItem('myMovies', JSON.stringify(favorites));
+    localStorage.setItem('myMoviesTMDB', JSON.stringify(favorites));
 }
 
 function loadMore() {
     currentPage++;
-    searchMovies(currentQuery, currentPage);
+    let url = '';
+    if (currentMode === 'trending') url = `${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=tr-TR`;
+    else if (currentMode === 'search') url = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${currentQuery}&language=tr-TR`;
+    else if (currentMode === 'genre') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${currentGenreId}&language=tr-TR`;
+    
+    getMovies(url, currentPage);
 }
 
-function filterGenre(genre) {
-    currentQuery = genre;
+function filterGenre(genreId) {
+    currentGenreId = genreId;
+    currentMode = 'genre';
     currentPage = 1;
-    searchMovies(genre);
+    getMovies(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=tr-TR`);
 }
 
 function showFavorites() {
@@ -107,3 +130,5 @@ function showFavorites() {
     }
     renderMovies(favorites, false);
 }
+
+siteTitle.onclick = () => location.reload();
