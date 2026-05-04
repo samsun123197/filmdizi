@@ -13,12 +13,10 @@ const loadMoreBtn = document.getElementById('load-more');
 const searchInput = document.getElementById('search');
 const modal = document.getElementById('movie-modal');
 
-// Başlangıç: Trend olanları getir
 document.addEventListener('DOMContentLoaded', () => {
     getMovies(`${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=tr-TR`);
 });
 
-// Arama Girişi (Enter'a basınca çalışır)
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         currentQuery = searchInput.value;
@@ -30,7 +28,6 @@ searchInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Ana Film Getirme Fonksiyonu
 async function getMovies(url, page = 1) {
     if (page === 1) movieContainer.innerHTML = '<p class="status-msg">Yükleniyor...</p>';
     try {
@@ -45,11 +42,10 @@ async function getMovies(url, page = 1) {
         }
     } catch (e) { 
         console.error("Hata:", e);
-        movieContainer.innerHTML = '<p class="status-msg">Veri yüklenirken hata oluştu.</p>';
+        movieContainer.innerHTML = '<p class="status-msg">Bağlantı hatası oluştu.</p>';
     }
 }
 
-// Filmleri Ekrana Basma
 function renderMovies(movies, append) {
     if (!append) movieContainer.innerHTML = '';
     movies.forEach(movie => {
@@ -70,7 +66,6 @@ function renderMovies(movies, append) {
             </div>
         `;
         
-        // Favori Butonu İşlemi
         card.querySelector('.fav-icon').onclick = (e) => {
             e.stopPropagation();
             toggleFavorite(movie);
@@ -80,24 +75,18 @@ function renderMovies(movies, append) {
     });
 }
 
-// İzle Butonu: IMDb ID'sini bulur ve yönlendirir
 async function playMovie(id) {
     try {
         const res = await fetch(`${BASE_URL}/movie/${id}/external_ids?api_key=${API_KEY}`);
         const data = await res.json();
-        
         if (data.imdb_id) {
-            const playLink = `https://playimdb.com/title/${data.imdb_id}`;
-            window.open(playLink, '_blank');
+            window.open(`https://playimdb.com/title/${data.imdb_id}`, '_blank');
         } else {
-            alert("Bu içerik için IMDb ID'si bulunamadı.");
+            alert("IMDb ID'si bulunamadı.");
         }
-    } catch (error) {
-        alert("Bağlantı hatası oluştu.");
-    }
+    } catch (e) { alert("Hata oluştu."); }
 }
 
-// Detay Penceresini Açma
 async function showDetails(id) {
     const res = await fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=tr-TR&append_to_response=external_ids`);
     const movie = await res.json();
@@ -119,39 +108,35 @@ async function showDetails(id) {
     modal.style.display = "block";
 }
 
-// Modal Kapatma
-function closeModal() { modal.style.display = "none"; }
-window.onclick = (e) => { if (e.target == modal) closeModal(); }
-
-// Tür Filtreleme
-function filterGenre(id) {
-    currentMode = 'genre'; 
-    currentGenreId = id; 
+function showTurkishMovies() {
+    currentMode = 'turkish';
     currentPage = 1;
-    getMovies(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${id}&language=tr-TR`);
-}
-
-// Daha Fazla Yükle
-function loadMore() {
-    currentPage++;
-    let url = currentMode === 'trending' ? `${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=tr-TR` :
-              currentMode === 'search' ? `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${currentQuery}&language=tr-TR` :
-              `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${currentGenreId}&language=tr-TR`;
+    const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_original_language=tr&language=tr-TR&sort_by=popularity.desc`;
     getMovies(url, currentPage);
 }
 
-// Favorilere Ekleme / Çıkarma
+function filterGenre(id) {
+    currentMode = 'genre'; currentGenreId = id; currentPage = 1;
+    getMovies(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${id}&language=tr-TR`);
+}
+
+function loadMore() {
+    currentPage++;
+    let url = '';
+    if (currentMode === 'trending') url = `${BASE_URL}/trending/movie/day?api_key=${API_KEY}&language=tr-TR`;
+    else if (currentMode === 'search') url = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${currentQuery}&language=tr-TR`;
+    else if (currentMode === 'genre') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${currentGenreId}&language=tr-TR`;
+    else if (currentMode === 'turkish') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_original_language=tr&language=tr-TR&sort_by=popularity.desc`;
+    
+    getMovies(url, currentPage);
+}
+
 function toggleFavorite(movie) {
     const idx = favorites.findIndex(f => f.id === movie.id);
-    if (idx > -1) {
-        favorites.splice(idx, 1);
-    } else {
-        favorites.push(movie);
-    }
+    idx > -1 ? favorites.splice(idx, 1) : favorites.push(movie);
     localStorage.setItem('myMoviesTMDB', JSON.stringify(favorites));
 }
 
-// Favorileri Listeleme
 function showFavorites() {
     movieContainer.innerHTML = '';
     loadMoreBtn.style.display = 'none';
@@ -162,5 +147,6 @@ function showFavorites() {
     renderMovies(favorites, false);
 }
 
-// Başlığa tıklayınca sayfayı yenile (Ana sayfa)
+function closeModal() { modal.style.display = "none"; }
+window.onclick = (e) => { if (e.target == modal) closeModal(); }
 document.getElementById('site-title').onclick = () => location.reload();
