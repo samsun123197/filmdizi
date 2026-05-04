@@ -1,4 +1,3 @@
-/* Genel Ayarlar */
 * {
     margin: 0;
     padding: 0;
@@ -6,137 +5,141 @@
 }
 
 body {
-    background-color: #141414; /* Netflix tarzı koyu arka plan */
-    color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
+    background-color: #141414;
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
 }
 
-/* Header ve Navigasyon */
 header {
-    background-color: #000000;
-    padding: 1.5rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    background-color: #000;
+    padding: 20px;
+    text-align: center;
     position: sticky;
     top: 0;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.7);
 }
 
 h1 {
-    color: #e50914; /* Film temalı kırmızı renk */
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-nav {
-    width: 100%;
-    max-width: 600px;
+    color: #e50914;
+    margin-bottom: 15px;
+    cursor: pointer;
 }
 
 #search {
     width: 100%;
+    max-width: 500px;
     padding: 12px 20px;
     border-radius: 25px;
-    border: 2px solid #333;
-    background-color: #222;
-    color: white;
+    border: none;
+    background: #333;
+    color: #fff;
     font-size: 1rem;
-    outline: none;
-    transition: all 0.3s ease;
+    margin-bottom: 15px;
 }
 
-#search:focus {
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-genre {
+    background: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-genre:hover {
+    background: #e50914;
     border-color: #e50914;
-    background-color: #333;
-    box-shadow: 0 0 10px rgba(229, 9, 20, 0.3);
 }
 
-/* Film Konteyner (Grid Yapısı) */
+.btn-fav {
+    background: #f5c518;
+    color: #000;
+    font-weight: bold;
+}
+
 main {
-    padding: 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 25px;
+    padding: 30px;
     max-width: 1400px;
     margin: 0 auto;
 }
 
-/* Film Kartı Tasarımı */
 .movie-card {
-    background-color: #1f1f1f;
-    border-radius: 12px;
+    background: #1f1f1f;
+    border-radius: 10px;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
     position: relative;
-    border: 1px solid #2a2a2a;
+    transition: transform 0.3s;
+    cursor: pointer;
 }
 
 .movie-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
-    border-color: #f5c518; /* IMDb Sarısı vurgusu */
+    transform: scale(1.05);
 }
 
-/* Film Afişi */
 .movie-card img {
     width: 100%;
-    height: 330px;
+    height: 300px;
     object-fit: cover;
-    display: block;
 }
 
-/* Film Bilgileri */
 .movie-info {
     padding: 15px;
-    background: linear-gradient(to top, #1f1f1f, #2a2a2a);
 }
 
 .movie-info h3 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
+    font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.fav-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    border: none;
     color: #fff;
-}
-
-.movie-info p {
-    font-size: 0.9rem;
-    color: #aaa;
-    font-weight: bold;
-}
-
-/* Mesaj ve Yükleniyor Yazıları */
-p {
-    text-align: center;
-    grid-column: 1 / -1;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
     font-size: 1.2rem;
-    margin-top: 50px;
-    color: #888;
 }
 
-/* Mobil Uyumluluk (Responsive) */
-@media (max-width: 600px) {
-    header {
-        padding: 1rem;
-    }
+.fav-icon.active {
+    color: #e50914;
+}
 
-    h1 {
-        font-size: 1.5rem;
-    }
+.pagination {
+    text-align: center;
+    padding: 40px;
+}
 
-    main {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: 15px;
-        padding: 1rem;
-    }
+#load-more {
+    background: #e50914;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: none;
+}
 
-    .movie-card img {
-        height: 230px;
-    }
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #555;
 }
