@@ -41,7 +41,6 @@ async function getMovies(url, page = 1) {
             loadMoreBtn.style.display = 'none';
         }
     } catch (e) { 
-        console.error("Hata:", e);
         movieContainer.innerHTML = '<p class="status-msg">Bağlantı hatası oluştu.</p>';
     }
 }
@@ -52,9 +51,13 @@ function renderMovies(movies, append) {
         const isFav = favorites.some(fav => fav.id === movie.id);
         const card = document.createElement('div');
         card.classList.add('movie-card');
+        
         const poster = movie.poster_path ? IMG_URL + movie.poster_path : "https://via.placeholder.com/300x450?text=Afiş+Yok";
+        const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+        const year = movie.release_date ? `(${movie.release_date.split('-')[0]})` : '';
         
         card.innerHTML = `
+            <div class="imdb-badge">⭐ ${rating}</div>
             <button class="fav-icon ${isFav ? 'active' : ''}">❤</button>
             <img src="${poster}" alt="${movie.title}">
             <div class="card-overlay">
@@ -62,7 +65,7 @@ function renderMovies(movies, append) {
                 <button class="btn-card btn-detay" onclick="showDetails('${movie.id}')">Detay</button>
             </div>
             <div class="movie-info">
-                <h3>${movie.title}</h3>
+                <h3>${movie.title} <span class="movie-year">${year}</span></h3>
             </div>
         `;
         
@@ -101,7 +104,7 @@ async function showDetails(id) {
                 <p><strong>Tür:</strong> ${movie.genres.map(g => g.name).join(', ')}</p>
                 <p><strong>Yıl:</strong> ${movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
                 <button class="btn-card btn-izle" style="margin-top:15px; width:100%;" onclick="playMovie('${movie.id}')">Hemen İzle</button>
-                <a href="https://www.imdb.com/title/${movie.external_ids?.imdb_id}" target="_blank" style="display:inline-block; margin-top:15px; color: #e50914; text-decoration:none; font-size:0.9rem;">IMDb'de Gör →</a>
+                <a href="https://www.imdb.com/title/${movie.external_ids?.imdb_id}" target="_blank" style="display:inline-block; margin-top:15px; color: #e50914; text-decoration:none;">IMDb'de Gör →</a>
             </div>
         </div>
     `;
@@ -109,8 +112,7 @@ async function showDetails(id) {
 }
 
 function showTurkishMovies() {
-    currentMode = 'turkish';
-    currentPage = 1;
+    currentMode = 'turkish'; currentPage = 1;
     const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_original_language=tr&language=tr-TR&sort_by=popularity.desc`;
     getMovies(url, currentPage);
 }
@@ -127,7 +129,6 @@ function loadMore() {
     else if (currentMode === 'search') url = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${currentQuery}&language=tr-TR`;
     else if (currentMode === 'genre') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${currentGenreId}&language=tr-TR`;
     else if (currentMode === 'turkish') url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_original_language=tr&language=tr-TR&sort_by=popularity.desc`;
-    
     getMovies(url, currentPage);
 }
 
