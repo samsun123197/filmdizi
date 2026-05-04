@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmDizi | Favori İçeriklerim</title>
-    <!-- Google Fonts: Roboto -->
+    <title>FilmDizi | Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <!-- CSS Dosyamız -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <h1>FilmDizi</h1>
+        <h1 id="site-title">FilmDizi</h1>
         <nav>
-            <input 
-                type="text" 
-                id="search" 
-                placeholder="Film, dizi veya belgesel ara..." 
-                autocomplete="off"
-            >
+            <input type="text" id="search" placeholder="Film veya dizi ara..." autocomplete="off">
         </nav>
+        <div class="filter-container">
+            <button class="btn-genre" onclick="filterGenre('Action')">Aksiyon</button>
+            <button class="btn-genre" onclick="filterGenre('Comedy')">Komedi</button>
+            <button class="btn-genre" onclick="filterGenre('Sci-Fi')">Bilim Kurgu</button>
+            <button class="btn-genre btn-fav" onclick="showFavorites()">❤ Favorilerim</button>
+        </div>
     </header>
 
     <main id="movie-container">
-        <!-- JavaScript ile gelecek olan film kartları burada listelenecek -->
-        <p>İçerikler yükleniyor...</p>
+        <!-- Filmler buraya yüklenecek -->
     </main>
 
+    <div class="pagination">
+        <button id="load-more" onclick="loadMore()">Daha Fazla Yükle</button>
+    </div>
+
     <footer>
-        <p style="font-size: 0.8rem; margin: 20px 0;">&copy; 2026 FilmDizi - OMDb API altyapısı ile hazırlanmıştır.</p>
+        <p>&copy; 2026 FilmDizi - OMDb API Altyapısı</p>
     </footer>
 
-    <!-- JavaScript Dosyamız -->
     <script src="script.js"></script>
 </body>
 </html>
