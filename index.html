@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FilmDizi | Portal</title>
+    <title>FilmDizi | TMDB Portal</title>
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- CSS Dosyamız -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,18 +14,25 @@
     <header>
         <h1 id="site-title">FilmDizi</h1>
         <nav>
-            <input type="text" id="search" placeholder="Film veya dizi ara..." autocomplete="off">
+            <input 
+                type="text" 
+                id="search" 
+                placeholder="Film ara..." 
+                autocomplete="off"
+            >
         </nav>
         <div class="filter-container">
-            <button class="btn-genre" onclick="filterGenre('Action')">Aksiyon</button>
-            <button class="btn-genre" onclick="filterGenre('Comedy')">Komedi</button>
-            <button class="btn-genre" onclick="filterGenre('Sci-Fi')">Bilim Kurgu</button>
+            <!-- TMDB Genre ID'leri kullanılmıştır -->
+            <button class="btn-genre" onclick="filterGenre('28')">Aksiyon</button>
+            <button class="btn-genre" onclick="filterGenre('35')">Komedi</button>
+            <button class="btn-genre" onclick="filterGenre('878')">Bilim Kurgu</button>
             <button class="btn-genre btn-fav" onclick="showFavorites()">❤ Favorilerim</button>
         </div>
     </header>
 
     <main id="movie-container">
-        <!-- Filmler buraya yüklenecek -->
+        <!-- JavaScript ile gelecek olan içerikler -->
+        <p>İçerikler yükleniyor...</p>
     </main>
 
     <div class="pagination">
@@ -31,9 +40,10 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 FilmDizi - OMDb API Altyapısı</p>
+        <p>&copy; 2026 FilmDizi - TMDB API Altyapısı ile Özgür Koç tarafından hazırlanmıştır.</p>
     </footer>
 
+    <!-- JavaScript Dosyamız -->
     <script src="script.js"></script>
 </body>
 </html>
