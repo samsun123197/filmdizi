@@ -22,16 +22,16 @@
             >
         </nav>
         <div class="filter-container">
-            <!-- TMDB Genre ID'leri (Aksiyon, Komedi, Bilim Kurgu) -->
             <button class="btn-genre" onclick="filterGenre('28')">Aksiyon</button>
             <button class="btn-genre" onclick="filterGenre('35')">Komedi</button>
             <button class="btn-genre" onclick="filterGenre('878')">Bilim Kurgu</button>
+            <!-- Yeni Yerli Butonu -->
+            <button class="btn-genre" onclick="showTurkishMovies()">Yerli</button>
             <button class="btn-genre btn-fav" onclick="showFavorites()">❤ Favorilerim</button>
         </div>
     </header>
 
     <main id="movie-container">
-        <!-- JavaScript ile yüklenen içerikler buraya gelecek -->
         <p class="status-msg">İçerikler yükleniyor...</p>
     </main>
 
@@ -40,7 +40,7 @@
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <div id="modal-details">
-                <!-- Film özetleri ve IMDb puanı JS ile buraya basılacak -->
+                <!-- İçerik JS ile dolacak -->
             </div>
         </div>
     </div>
