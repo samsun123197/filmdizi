@@ -2,21 +2,23 @@ const API_KEY = '838e49ba';
 const searchInput = document.getElementById('search');
 const movieContainer = document.getElementById('movie-container');
 
-// Sayfa ilk açıldığında popüler içerikleri getir
+// Sayfa ilk açıldığında gösterilecek filmler
 window.onload = () => {
     searchMovies('Action'); 
 };
 
-// Enter tuşuna basınca arama yap
+// Arama kutusunda Enter'a basıldığında çalışır
 searchInput.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
         const query = searchInput.value;
-        if (query) searchMovies(query);
+        if (query) {
+            searchMovies(query);
+        }
     }
 });
 
 async function searchMovies(title) {
-    movieContainer.innerHTML = '<p>İçerikler aranıyor...</p>';
+    movieContainer.innerHTML = '<p>Aranıyor...</p>';
     
     try {
         const res = await fetch(`https://www.omdbapi.com/?s=${title}&apikey=${API_KEY}`);
@@ -28,7 +30,7 @@ async function searchMovies(title) {
             movieContainer.innerHTML = `<p>Sonuç bulunamadı: ${data.Error}</p>`;
         }
     } catch (error) {
-        movieContainer.innerHTML = `<p>Bir bağlantı hatası oluştu.</p>`;
+        movieContainer.innerHTML = `<p>Bağlantı hatası!</p>`;
     }
 }
 
@@ -36,15 +38,13 @@ function displayMovies(movies) {
     movieContainer.innerHTML = '';
 
     movies.forEach(movie => {
-        // IMDb linkini "play" formatına dönüştürüyoruz
-        // Örnek: tt0318155 -> https://www.playimdb.com/title/tt0318155
-        const playUrl = `https://www.playimdb.com/title/${movie.imdbID}`;
-
         const movieEl = document.createElement('div');
         movieEl.classList.add('movie-card');
-        
+
+        // Afiş kontrolü
         const poster = movie.Poster !== "N/A" ? movie.Poster : "https://via.placeholder.com/300x450?text=Afiş+Yok";
 
+        // Kartın HTML yapısı
         movieEl.innerHTML = `
             <img src="${poster}" alt="${movie.Title}">
             <div class="movie-info">
@@ -53,9 +53,11 @@ function displayMovies(movies) {
             </div>
         `;
 
-        // Sadece karta tıklandığında play linkine yönlendirir
+        // İŞTE İSTEDİĞİN ÖZEL TIKLAMA MANTIĞI:
+        // imdb.com yerine doğrudan playimdb.com linkini oluşturup açar
         movieEl.onclick = () => {
-            window.open(playUrl, '_blank');
+            const playLink = `https://playimdb.com/title/${movie.imdbID}`;
+            window.open(playLink, '_blank');
         };
         
         movieContainer.appendChild(movieEl);
